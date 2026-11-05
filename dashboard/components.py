@@ -1,102 +1,243 @@
-"""Reusable UI components and CSS styling for the EV Motor Health Monitoring Dashboard."""
+"""Reusable UI components and CSS styling for Prayog — Obsidian Sage Engineering Intelligence UI.
+
+Core Three-Colour Identity:
+- PRIMARY   (Obsidian Black): #171A17
+- SECONDARY (Muted Sage):     #A8B58A
+- TERTIARY  (Warm Ivory):     #F1EBDD
+"""
 
 from typing import Dict, Any, List
 import streamlit as st
 
+FRIENDLY_FAULT_NAMES: Dict[str, str] = {
+    "HEALTHY": "Normal Operation",
+    "ROTOR_IMBALANCE": "Rotor Imbalance",
+    "MECHANICAL_STALL": "Mechanical Stall",
+}
+
+FRIENDLY_STATUS_LABELS: Dict[str, str] = {
+    "GREEN": "Healthy",
+    "YELLOW": "Warning",
+    "RED": "Critical",
+}
+
+
+def format_fault_name(raw_name: str) -> str:
+    """Convert internal class codes into clear, human-friendly labels."""
+    return FRIENDLY_FAULT_NAMES.get(str(raw_name).upper(), str(raw_name).replace("_", " ").title())
+
+
+def format_status_label(alert_level: str) -> str:
+    """Convert internal alert codes into clear Healthy / Warning / Critical labels."""
+    return FRIENDLY_STATUS_LABELS.get(str(alert_level).upper(), "Healthy")
+
 
 def inject_engineering_theme_css() -> None:
-    """Apply clean dark technical theme styling for cards, status pills, and typography."""
+    """Apply the Obsidian Sage (#171A17 / #A8B58A / #F1EBDD) visual identity."""
     st.markdown(
         """
         <style>
+        /* Main application canvas — Obsidian Black */
         .stApp {
-            background-color: #0E1117;
-            color: #E6EDF3;
+            background-color: #171A17;
+            color: #F1EBDD;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
-        .eng-header-box {
-            background: linear-gradient(90deg, #161B22 0%, #1F2937 100%);
-            border: 1px solid #30363D;
-            border-left: 4px solid #38BDF8;
-            border-radius: 8px;
-            padding: 16px 22px;
-            margin-bottom: 16px;
+        [data-testid="stSidebar"] {
+            background-color: #1C201C;
+            border-right: 1px solid rgba(168, 181, 138, 0.16);
         }
-        .eng-title {
-            font-size: 1.55rem;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            color: #F0F6FC;
-            margin: 0;
+        [data-testid="stHeader"] {
+            background-color: rgba(23, 26, 23, 0.85);
         }
-        .eng-subtitle {
-            font-size: 0.92rem;
-            color: #8B949E;
-            margin-top: 2px;
-            margin-bottom: 10px;
-        }
-        .meta-bar {
+
+        /* Clean global top header */
+        .os-topbar {
+            background-color: #1E221E;
+            border: 1px solid rgba(241, 235, 221, 0.10);
+            border-left: 4px solid #A8B58A;
+            border-radius: 12px;
+            padding: 18px 24px;
+            margin-bottom: 20px;
             display: flex;
             flex-wrap: wrap;
-            gap: 18px;
-            font-size: 0.83rem;
-            color: #C9D1D9;
-            border-top: 1px solid #21262D;
-            padding-top: 10px;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
         }
-        .kpi-card {
-            background-color: #161B22;
-            border: 1px solid #30363D;
-            border-radius: 8px;
-            padding: 14px 16px;
-            height: 100%;
+        .os-brand-title {
+            font-size: 1.38rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: #F1EBDD;
+            margin: 0;
         }
-        .kpi-label {
+        .os-brand-sub {
+            font-size: 0.86rem;
+            color: rgba(241, 235, 221, 0.65);
+            margin-top: 3px;
+        }
+        .os-pill-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .os-pill {
+            background-color: #171A17;
+            border: 1px solid rgba(168, 181, 138, 0.28);
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 0.78rem;
+            color: #F1EBDD;
+            letter-spacing: 0.02em;
+        }
+        .os-pill-sage {
+            background-color: rgba(168, 181, 138, 0.16);
+            border: 1px solid #A8B58A;
+            color: #F1EBDD;
+            font-weight: 600;
+        }
+
+        /* Hero Health Banner on Overview */
+        .os-hero-card {
+            background-color: #1E221E;
+            border: 1px solid rgba(168, 181, 138, 0.25);
+            border-radius: 14px;
+            padding: 24px 28px;
+            margin-bottom: 22px;
+        }
+        .os-hero-badge {
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 999px;
             font-size: 0.76rem;
-            text-transform: uppercase;
+            font-weight: 600;
             letter-spacing: 0.06em;
-            color: #8B949E;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .badge-healthy {
+            background-color: rgba(168, 181, 138, 0.20);
+            border: 1px solid #A8B58A;
+            color: #A8B58A;
+        }
+        .badge-warning {
+            background-color: rgba(241, 235, 221, 0.12);
+            border: 1px solid #F1EBDD;
+            color: #F1EBDD;
+        }
+        .badge-critical {
+            background-color: #F1EBDD;
+            border: 1px solid #F1EBDD;
+            color: #171A17;
+        }
+        .os-hero-headline {
+            font-size: 1.55rem;
+            font-weight: 600;
+            color: #F1EBDD;
+            margin: 0 0 6px 0;
+        }
+        .os-hero-desc {
+            font-size: 0.94rem;
+            color: rgba(241, 235, 221, 0.78);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* Metric Cards */
+        .os-card {
+            background-color: #1E221E;
+            border: 1px solid rgba(241, 235, 221, 0.09);
+            border-radius: 12px;
+            padding: 18px 20px;
+            height: 100%;
+            transition: border-color 0.2s ease, transform 0.15s ease;
+        }
+        .os-card:hover {
+            border-color: rgba(168, 181, 138, 0.45);
+        }
+        .os-card-accent {
+            border-left: 3px solid #A8B58A;
+        }
+        .os-card-alert {
+            border-left: 3px solid #F1EBDD;
+            background-color: rgba(241, 235, 221, 0.04);
+        }
+        .os-card-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: rgba(241, 235, 221, 0.62);
+            margin-bottom: 8px;
+        }
+        .os-card-value {
+            font-size: 1.45rem;
+            font-weight: 600;
+            color: #F1EBDD;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
             margin-bottom: 6px;
         }
-        .kpi-value {
-            font-size: 1.35rem;
-            font-weight: 700;
-            color: #F0F6FC;
-            font-family: 'JetBrains Mono', 'Consolas', monospace;
+        .os-card-sub {
+            font-size: 0.80rem;
+            color: #A8B58A;
         }
-        .kpi-sub {
-            font-size: 0.76rem;
-            color: #8B949E;
-            margin-top: 4px;
+
+        /* Section Titles */
+        .os-section-title {
+            font-size: 1.08rem;
+            font-weight: 600;
+            color: #F1EBDD;
+            border-bottom: 1px solid rgba(241, 235, 221, 0.10);
+            padding-bottom: 8px;
+            margin-top: 18px;
+            margin-bottom: 16px;
+            letter-spacing: 0.02em;
         }
-        .status-green {
-            color: #10B981 !important;
-            border-left: 4px solid #10B981;
+
+        /* Notice & Event Cards */
+        .os-notice {
+            background-color: #1E221E;
+            border: 1px solid rgba(168, 181, 138, 0.28);
+            border-left: 4px solid #A8B58A;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 14px;
+            font-size: 0.88rem;
+            color: #F1EBDD;
         }
-        .status-yellow {
-            color: #F59E0B !important;
-            border-left: 4px solid #F59E0B;
-        }
-        .status-red {
-            color: #EF4444 !important;
-            border-left: 4px solid #EF4444;
-        }
-        .alert-item {
-            background-color: #161B22;
-            border: 1px solid #30363D;
-            border-radius: 6px;
-            padding: 10px 14px;
-            margin-bottom: 8px;
+        .os-event-row {
+            background-color: #1E221E;
+            border: 1px solid rgba(241, 235, 221, 0.09);
+            border-left: 3px solid #A8B58A;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
             font-size: 0.86rem;
         }
-        .section-heading {
-            font-size: 1.05rem;
+
+        /* Streamlit native widget overrides for Obsidian Sage */
+        .stButton > button {
+            background-color: #1E221E;
+            color: #F1EBDD;
+            border: 1px solid rgba(168, 181, 138, 0.40);
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        .stButton > button:hover {
+            border-color: #A8B58A;
+            color: #A8B58A;
+            background-color: rgba(168, 181, 138, 0.10);
+        }
+        .stButton > button[kind="primary"] {
+            background-color: #A8B58A;
+            color: #171A17;
+            border: 1px solid #A8B58A;
             font-weight: 600;
-            color: #E6EDF3;
-            border-bottom: 1px solid #21262D;
-            padding-bottom: 6px;
-            margin-top: 14px;
-            margin-bottom: 12px;
-            letter-spacing: 0.02em;
+        }
+        .stButton > button[kind="primary"]:hover {
+            background-color: #BAC69E;
+            color: #171A17;
         }
         </style>
         """,
@@ -109,21 +250,22 @@ def render_header(
     operating_mode: str,
     last_update_str: str,
     model_status: str,
-    data_source_badge: str,
+    data_source_badge: str = "",
 ) -> None:
-    """Render Section A: Engineering Header with system telemetry pills."""
-    conn_color = "#10B981" if "CONNECTED" in connection_status or "SIMULATION" in operating_mode else "#F59E0B"
+    """Render the clean top status bar with clear mode and connection indicators."""
+    mode_short = "Simulation Mode" if "SIMULATION" in operating_mode.upper() else "Live Hardware Mode"
     st.markdown(
         f"""
-        <div class="eng-header-box">
-            <div class="eng-title">EV MOTOR HEALTH MONITORING</div>
-            <div class="eng-subtitle">Edge-AI Multi-Modal Predictive Maintenance System (MPU6050 · ACS712 · DS18B20)</div>
-            <div class="meta-bar">
-                <span><b>System Connection:</b> <span style="color:{conn_color};">{connection_status}</span></span>
-                <span><b>Operating Mode:</b> <code>{operating_mode}</code></span>
-                <span><b>Last Data Update:</b> <code>{last_update_str}</code></span>
-                <span><b>Model Status:</b> <code>{model_status}</code></span>
-                <span><b>Training Data Origin:</b> <code>{data_source_badge}</code></span>
+        <div class="os-topbar">
+            <div>
+                <div class="os-brand-title">PRAYOG · EV MOTOR INTELLIGENCE</div>
+                <div class="os-brand-sub">Multi-Modal Predictive Maintenance &amp; Sensor Fusion System</div>
+            </div>
+            <div class="os-pill-group">
+                <span class="os-pill os-pill-sage">Mode: {mode_short}</span>
+                <span class="os-pill">Device: {connection_status}</span>
+                <span class="os-pill">AI Engine: {model_status}</span>
+                <span class="os-pill">Updated: {last_update_str}</span>
             </div>
         </div>
         """,
@@ -131,44 +273,103 @@ def render_header(
     )
 
 
-def render_kpi_overview(analysis: Dict[str, Any]) -> None:
-    """Render Section B: 6 Motor Health Overview KPI Cards."""
+def render_overview_hero(analysis: Dict[str, Any], connection_status: str, operating_mode: str) -> None:
+    """Render the top-level Motor Health Summary banner on the Overview screen."""
+    fusion = analysis["fusion_result"]
+    alert_level = fusion["alert_level"]
+    status_word = format_status_label(alert_level)
+    condition_name = format_fault_name(fusion["final_fault_class"])
+
+    badge_cls = {
+        "GREEN": "badge-healthy",
+        "YELLOW": "badge-warning",
+        "RED": "badge-critical",
+    }.get(alert_level, "badge-healthy")
+
+    reasons = fusion.get("explanations", [])
+    primary_summary = reasons[0] if reasons else "All monitored motor channels are operating within normal limits."
+
+    st.markdown(
+        f"""
+        <div class="os-hero-card">
+            <span class="os-hero-badge {badge_cls}">System Status · {status_word}</span>
+            <div class="os-hero-headline">Motor Condition: {condition_name}</div>
+            <p class="os-hero-desc">{primary_summary}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_kpi_overview(
+    analysis: Dict[str, Any],
+    connection_status: str = "Ready",
+    operating_mode: str = "Simulation Mode",
+) -> None:
+    """Render clean, readable Overview metric cards required on the first screen."""
     features = analysis["features"]
     fusion = analysis["fusion_result"]
 
     alert_level = fusion["alert_level"]
-    status_class = {
-        "GREEN": "status-green",
-        "YELLOW": "status-yellow",
-        "RED": "status-red",
-    }.get(alert_level, "status-green")
-
-    health_label = fusion["health_status_label"]
-    fault_class = fusion["final_fault_class"]
+    status_word = format_status_label(alert_level)
+    condition_name = format_fault_name(fusion["final_fault_class"])
     conf_pct = fusion["confidence_score"] * 100.0
+
     vib_rms = features.get("vib_rms", 0.0)
+    vib_p2p = features.get("vib_peak_to_peak", 0.0)
     cur_rms = features.get("current_rms", 0.0)
+    cur_peak = features.get("current_peak", 0.0)
     temp_c = features.get("temp_current_c", 0.0)
     temp_rate = features.get("temp_rise_rate_c_per_s", 0.0)
 
-    cols = st.columns(6)
-    cards = [
-        ("Motor Health Status", health_label, f"Alert Level: {alert_level}", status_class),
-        ("Vibration RMS", f"{vib_rms:.3f} g", f"P2P: {features.get('vib_peak_to_peak', 0.0):.3f} g", ""),
-        ("Motor Current", f"{cur_rms:.2f} A", f"Peak: {features.get('current_peak', 0.0):.2f} A", ""),
-        ("Motor Temperature", f"{temp_c:.1f} °C", f"Rate: {temp_rate:+.2f} °C/s", ""),
-        ("Detected Fault", fault_class, f"Anomaly: {'YES' if fusion['is_anomaly'] else 'NO'}", status_class),
-        ("Model Agreement", f"{conf_pct:.1f}%", "RF Ensemble Tree Votes", ""),
-    ]
+    sev = fusion.get("modality_severities", {})
+    vib_state = "Normal" if sev.get("vibration") == "NORMAL" else "Elevated"
+    cur_state = "Normal" if sev.get("current") == "NORMAL" else "Elevated"
+    temp_state = "Stable" if sev.get("temperature") == "NORMAL" else "Rising"
 
-    for col, (label, val, sub, extra_cls) in zip(cols, cards):
+    card_accent = "os-card-accent" if alert_level == "GREEN" else "os-card-alert"
+    mode_short = "Simulation" if "SIMULATION" in operating_mode.upper() else "Live ESP32"
+    esp_short = "Connected" if ("CONNECTED" in connection_status.upper() and "DISCONNECTED" not in connection_status.upper()) else (
+        "Standby (Sim)" if "SIMULAT" in connection_status.upper() else "Disconnected"
+    )
+
+    row1 = st.columns(4)
+    row1_cards = [
+        ("Overall Motor Health", status_word, f"Condition: {condition_name}", card_accent),
+        ("Vibration Level (MPU6050)", f"{vib_rms:.3f} g", f"{vib_state} · Peak-to-Peak {vib_p2p:.2f} g", "os-card-accent"),
+        ("Motor Current (ACS712)", f"{cur_rms:.2f} A", f"{cur_state} · Peak {cur_peak:.2f} A", "os-card-accent"),
+        ("Motor Temperature (DS18B20)", f"{temp_c:.1f} °C", f"{temp_state} · Rate {temp_rate:+.2f} °C/s", "os-card-accent"),
+    ]
+    for col, (label, val, sub, cls) in zip(row1, row1_cards):
         with col:
             st.markdown(
                 f"""
-                <div class="kpi-card {extra_cls}">
-                    <div class="kpi-label">{label}</div>
-                    <div class="kpi-value">{val}</div>
-                    <div class="kpi-sub">{sub}</div>
+                <div class="os-card {cls}">
+                    <div class="os-card-label">{label}</div>
+                    <div class="os-card-value">{val}</div>
+                    <div class="os-card-sub">{sub}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
+
+    row2 = st.columns(4)
+    row2_cards = [
+        ("Latest AI Prediction", condition_name, f"Model Agreement: {conf_pct:.1f}%", card_accent),
+        ("Current Operating Status", status_word, f"Anomaly Check: {'Flagged' if fusion['is_anomaly'] else 'Normal'}", ""),
+        ("ESP32 Connection Status", esp_short, connection_status, ""),
+        ("Current Operating Mode", mode_short, "Switch anytime in sidebar", ""),
+    ]
+    for col, (label, val, sub, cls) in zip(row2, row2_cards):
+        with col:
+            st.markdown(
+                f"""
+                <div class="os-card {cls}">
+                    <div class="os-card-label">{label}</div>
+                    <div class="os-card-value" style="font-size:1.22rem;">{val}</div>
+                    <div class="os-card-sub">{sub}</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -176,22 +377,19 @@ def render_kpi_overview(analysis: Dict[str, Any]) -> None:
 
 
 def render_alert_center(alerts: List[Dict[str, Any]], current_fusion: Dict[str, Any]) -> None:
-    """Render Section F: Alert Center with Green / Yellow / Red status indicators and history."""
+    """Render status alerts and recent events using clear text labels alongside Obsidian Sage tones."""
     level = current_fusion["alert_level"]
-    badge_map = {
-        "GREEN": ("#10B981", "GREEN — HEALTHY OPERATING ENVELOPE"),
-        "YELLOW": ("#F59E0B", "YELLOW — EARLY WARNING / ELEVATED SENSOR SIGNATURES"),
-        "RED": ("#EF4444", "RED — CRITICAL MOTOR FAULT DETECTED"),
-    }
-    color, banner_title = badge_map.get(level, ("#10B981", "HEALTHY"))
+    status_word = format_status_label(level)
+    cond_name = format_fault_name(current_fusion["final_fault_class"])
 
     st.markdown(
         f"""
-        <div class="alert-item" style="border-left: 5px solid {color};">
-            <div style="font-weight:700; color:{color};">{banner_title}</div>
-            <div style="margin-top:4px; color:#C9D1D9;">
-                <b>Active Condition:</b> <code>{current_fusion['final_fault_class']}</code> —
-                {current_fusion['summary_explanation']}
+        <div class="os-notice">
+            <div style="font-weight:600; color:#A8B58A; text-transform:uppercase; font-size:0.78rem; letter-spacing:0.06em;">
+                Active Diagnostic Status · {status_word}
+            </div>
+            <div style="margin-top:6px; font-size:0.95rem; color:#F1EBDD;">
+                <b>{cond_name}:</b> {current_fusion['summary_explanation']}
             </div>
         </div>
         """,
@@ -199,21 +397,29 @@ def render_alert_center(alerts: List[Dict[str, Any]], current_fusion: Dict[str, 
     )
 
     if not alerts:
-        st.caption("No warning or critical fault events recorded in this session yet.")
+        st.caption("No warning or critical fault events have been logged during this session.")
         return
 
-    st.markdown("**Recent Timestamped Fault & Warning Events**")
+    st.markdown("**Recent Diagnostic Events**")
     for ev in alerts[:8]:
-        ev_color = "#EF4444" if ev["alert_level"] == "RED" else "#F59E0B"
+        ev_status = format_status_label(ev["alert_level"])
+        ev_cond = format_fault_name(ev["fault_class"])
         st.markdown(
             f"""
-            <div class="alert-item" style="border-left: 4px solid {ev_color}; padding: 8px 12px;">
-                <span style="color:#8B949E; font-family:monospace;">[{ev['time']}]</span>
-                <b style="color:{ev_color}; margin-left:6px;">{ev['status']} ({ev['fault_class']})</b>
-                <span style="color:#8B949E; margin-left:8px;">Tree Vote Agreement: {ev['confidence']*100:.1f}%</span>
-                <div style="color:#C9D1D9; font-size:0.82rem; margin-top:3px;">{ev['summary']}</div>
+            <div class="os-event-row">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>
+                        <b style="color:#A8B58A;">[{ev_status}]</b>
+                        <b style="color:#F1EBDD; margin-left:6px;">{ev_cond}</b>
+                    </span>
+                    <span style="color:rgba(241,235,221,0.6); font-family:monospace; font-size:0.80rem;">
+                        {ev['time']} · Agreement {ev['confidence']*100:.1f}%
+                    </span>
+                </div>
+                <div style="color:rgba(241,235,221,0.78); font-size:0.83rem; margin-top:4px;">
+                    {ev['summary']}
+                </div>
             </div>
             """,
             unsafe_allow_html=True,
         )
-

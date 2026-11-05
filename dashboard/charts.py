@@ -1,49 +1,67 @@
-"""Interactive Plotly chart builders for the EV Motor Health Monitoring Streamlit Dashboard."""
+"""Interactive Plotly chart builders for Prayog — Obsidian Sage Engineering Intelligence UI.
+
+Strictly uses the 3-colour palette and its shades/opacity variations:
+- PRIMARY   (Obsidian Black): #171A17  (Surfaces: #1E221E, Grid: rgba(241, 235, 221, 0.08))
+- SECONDARY (Muted Sage):     #A8B58A  (Shades: #87946B, #C2CEA7)
+- TERTIARY  (Warm Ivory):     #F1EBDD  (Shades: #D6CEBF, #9E9A90)
+"""
 
 from typing import Dict, Any, List
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
-# Restrained technical dark-theme color palette
-BG_COLOR = "#0E1117"
-CARD_BG = "#161B22"
-GRID_COLOR = "#21262D"
-TEXT_COLOR = "#E6EDF3"
-MUTED_TEXT = "#8B949E"
+# Core Three-Colour Palette & Tonal Variations
+OBSIDIAN_BG = "#171A17"
+OBSIDIAN_SURFACE = "#1E221E"
+OBSIDIAN_GRID = "rgba(241, 235, 221, 0.08)"
 
-COLOR_CYAN = "#38BDF8"
-COLOR_AMBER = "#F59E0B"
-COLOR_RED = "#EF4444"
-COLOR_GREEN = "#10B981"
-COLOR_PURPLE = "#A855F7"
+SAGE_MAIN = "#A8B58A"
+SAGE_LIGHT = "#C4D0AA"
+SAGE_DEEP = "#7B8862"
+SAGE_FILL = "rgba(168, 181, 138, 0.14)"
+
+IVORY_MAIN = "#F1EBDD"
+IVORY_SOFT = "#CFC8B8"
+IVORY_MUTED = "#9B968B"
+IVORY_FILL = "rgba(241, 235, 221, 0.10)"
 
 
-def _apply_dark_engineering_layout(
+def _apply_obsidian_sage_layout(
     fig: go.Figure,
     title: str,
     xaxis_title: str,
     yaxis_title: str,
-    height: int = 260,
+    height: int = 280,
 ) -> go.Figure:
+    """Apply clean, calm Obsidian Sage styling to a Plotly figure."""
     fig.update_layout(
-        title=dict(text=title, font=dict(size=14, color=TEXT_COLOR), x=0.01, y=0.95),
-        paper_bgcolor=CARD_BG,
-        plot_bgcolor=CARD_BG,
-        font=dict(family="Inter, Segoe UI, Roboto, monospace", size=12, color=TEXT_COLOR),
-        margin=dict(l=48, r=20, t=42, b=38),
+        title=dict(
+            text=title,
+            font=dict(family="Inter, Segoe UI, sans-serif", size=14, color=IVORY_MAIN),
+            x=0.01,
+            y=0.95,
+        ),
+        paper_bgcolor=OBSIDIAN_SURFACE,
+        plot_bgcolor=OBSIDIAN_SURFACE,
+        font=dict(family="Inter, Segoe UI, sans-serif", size=12, color=IVORY_MAIN),
+        margin=dict(l=50, r=22, t=46, b=40),
         height=height,
         xaxis=dict(
-            title=xaxis_title,
-            gridcolor=GRID_COLOR,
-            zerolinecolor=GRID_COLOR,
-            tickfont=dict(color=MUTED_TEXT, size=11),
+            title=dict(text=xaxis_title, font=dict(color=IVORY_MUTED, size=11)),
+            gridcolor=OBSIDIAN_GRID,
+            zerolinecolor=OBSIDIAN_GRID,
+            tickfont=dict(color=IVORY_MUTED, size=11),
+            showline=True,
+            linecolor=OBSIDIAN_GRID,
         ),
         yaxis=dict(
-            title=yaxis_title,
-            gridcolor=GRID_COLOR,
-            zerolinecolor=GRID_COLOR,
-            tickfont=dict(color=MUTED_TEXT, size=11),
+            title=dict(text=yaxis_title, font=dict(color=IVORY_MUTED, size=11)),
+            gridcolor=OBSIDIAN_GRID,
+            zerolinecolor=OBSIDIAN_GRID,
+            tickfont=dict(color=IVORY_MUTED, size=11),
+            showline=True,
+            linecolor=OBSIDIAN_GRID,
         ),
         legend=dict(
             orientation="h",
@@ -51,36 +69,65 @@ def _apply_dark_engineering_layout(
             y=1.02,
             xanchor="right",
             x=1.0,
-            font=dict(size=11, color=MUTED_TEXT),
+            font=dict(size=11, color=IVORY_SOFT),
             bgcolor="rgba(0,0,0,0)",
+        ),
+        hoverlabel=dict(
+            bgcolor=OBSIDIAN_BG,
+            bordercolor=SAGE_MAIN,
+            font=dict(color=IVORY_MAIN, size=12),
         ),
     )
     return fig
 
 
 def create_vibration_waveform_chart(window_data: Dict[str, Any]) -> go.Figure:
-    """Create 3-axis raw vibration waveform chart (MPU6050)."""
+    """Create 3-axis mechanical vibration waveform chart (MPU6050)."""
     t = np.asarray(window_data.get("time_axis_s", []), dtype=float)
     vx = np.asarray(window_data.get("vibration_x", []), dtype=float)
     vy = np.asarray(window_data.get("vibration_y", []), dtype=float)
-    vz = np.asarray(window_data.get("vibration_z", []), dtype=float) - 1.0  # Dynamic Z-axis (gravity removed)
+    vz = np.asarray(window_data.get("vibration_z", []), dtype=float) - 1.0  # Gravity removed
 
     if t.size != vx.size:
         t = np.arange(vx.size) * 0.001
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=t, y=vx, mode="lines", name="Vib X (g)", line=dict(color=COLOR_CYAN, width=1.6)))
+    fig.add_trace(
+        go.Scatter(
+            x=t,
+            y=vx,
+            mode="lines",
+            name="Axis X (g)",
+            line=dict(color=SAGE_MAIN, width=1.8),
+        )
+    )
     if vy.size == t.size:
-        fig.add_trace(go.Scatter(x=t, y=vy, mode="lines", name="Vib Y (g)", line=dict(color=COLOR_PURPLE, width=1.3)))
+        fig.add_trace(
+            go.Scatter(
+                x=t,
+                y=vy,
+                mode="lines",
+                name="Axis Y (g)",
+                line=dict(color=IVORY_MAIN, width=1.3),
+            )
+        )
     if vz.size == t.size:
-        fig.add_trace(go.Scatter(x=t, y=vz, mode="lines", name="Vib Z-dyn (g)", line=dict(color=COLOR_GREEN, width=1.2)))
+        fig.add_trace(
+            go.Scatter(
+                x=t,
+                y=vz,
+                mode="lines",
+                name="Axis Z Dynamic (g)",
+                line=dict(color=SAGE_DEEP, width=1.2, dash="dot"),
+            )
+        )
 
-    return _apply_dark_engineering_layout(
+    return _apply_obsidian_sage_layout(
         fig,
-        title="MPU6050 Triaxial Mechanical Vibration Waveform",
-        xaxis_title="Time (s)",
+        title="Mechanical Vibration Waveform (MPU6050)",
+        xaxis_title="Time (seconds)",
         yaxis_title="Acceleration (g)",
-        height=265,
+        height=280,
     )
 
 
@@ -98,24 +145,24 @@ def create_current_waveform_chart(window_data: Dict[str, Any]) -> go.Figure:
             y=cur,
             mode="lines",
             name="Motor Current (A)",
-            line=dict(color=COLOR_AMBER, width=1.8),
+            line=dict(color=IVORY_MAIN, width=1.9),
             fill="tozeroy",
-            fillcolor="rgba(245, 158, 11, 0.10)",
+            fillcolor=IVORY_FILL,
         )
     )
     fig.add_hline(
         y=5.5,
         line_dash="dash",
-        line_color=COLOR_RED,
-        annotation_text="Stall Threshold (5.5A)",
-        annotation_font_color=COLOR_RED,
+        line_color=SAGE_MAIN,
+        annotation_text="Stall Limit (5.5 A)",
+        annotation_font_color=SAGE_LIGHT,
     )
-    return _apply_dark_engineering_layout(
+    return _apply_obsidian_sage_layout(
         fig,
-        title="ACS712 Motor Phase/Supply Current Waveform",
-        xaxis_title="Time (s)",
-        yaxis_title="Current (A)",
-        height=265,
+        title="Motor Current Draw (ACS712)",
+        xaxis_title="Time (seconds)",
+        yaxis_title="Current (Amperes)",
+        height=280,
     )
 
 
@@ -129,9 +176,9 @@ def create_temperature_trend_chart(history_df: pd.DataFrame) -> go.Figure:
                 x=x_vals,
                 y=history_df["temp_current_c"],
                 mode="lines+markers",
-                name="Temp (°C)",
-                line=dict(color=COLOR_RED, width=2.0),
-                marker=dict(size=5),
+                name="Temperature (°C)",
+                line=dict(color=SAGE_MAIN, width=2.0),
+                marker=dict(size=5, color=IVORY_MAIN),
             )
         )
         if "temp_moving_avg_c" in history_df.columns:
@@ -140,31 +187,31 @@ def create_temperature_trend_chart(history_df: pd.DataFrame) -> go.Figure:
                     x=x_vals,
                     y=history_df["temp_moving_avg_c"],
                     mode="lines",
-                    name="Moving Avg (°C)",
-                    line=dict(color=COLOR_CYAN, width=1.5, dash="dot"),
+                    name="Moving Average (°C)",
+                    line=dict(color=IVORY_MUTED, width=1.5, dash="dot"),
                 )
             )
 
     fig.add_hline(
         y=55.0,
         line_dash="dot",
-        line_color=COLOR_AMBER,
-        annotation_text="Warning (55°C)",
-        annotation_font_color=COLOR_AMBER,
+        line_color=IVORY_SOFT,
+        annotation_text="Warning (55 °C)",
+        annotation_font_color=IVORY_SOFT,
     )
     fig.add_hline(
         y=70.0,
         line_dash="dash",
-        line_color=COLOR_RED,
-        annotation_text="Critical (70°C)",
-        annotation_font_color=COLOR_RED,
+        line_color=SAGE_MAIN,
+        annotation_text="Critical (70 °C)",
+        annotation_font_color=SAGE_LIGHT,
     )
-    return _apply_dark_engineering_layout(
+    return _apply_obsidian_sage_layout(
         fig,
-        title="DS18B20 Motor Thermal Trend",
-        xaxis_title="Timestamp",
+        title="Motor Temperature Trend (DS18B20)",
+        xaxis_title="Time",
         yaxis_title="Temperature (°C)",
-        height=265,
+        height=280,
     )
 
 
@@ -187,9 +234,9 @@ def create_filtered_vibration_chart(
                 x=t,
                 y=raw,
                 mode="lines",
-                name="Raw Composite (DC removed)",
-                line=dict(color=MUTED_TEXT, width=1.1),
-                opacity=0.55,
+                name="Raw Unfiltered (DC Removed)",
+                line=dict(color=IVORY_MUTED, width=1.1),
+                opacity=0.45,
             )
         )
     fig.add_trace(
@@ -198,15 +245,15 @@ def create_filtered_vibration_chart(
             y=filt,
             mode="lines",
             name="Bandpass Filtered (50 Hz – 1 kHz)",
-            line=dict(color=COLOR_CYAN, width=1.8),
+            line=dict(color=SAGE_MAIN, width=1.8),
         )
     )
-    return _apply_dark_engineering_layout(
+    return _apply_obsidian_sage_layout(
         fig,
-        title="Bandpass Filtered Vibration Signal (50 Hz – 1 kHz Target Passband)",
-        xaxis_title="Time (s)",
+        title="Filtered Vibration Signal (50 Hz – 1 kHz Bandpass)",
+        xaxis_title="Time (seconds)",
         yaxis_title="Filtered Acceleration (g)",
-        height=275,
+        height=285,
     )
 
 
@@ -225,36 +272,42 @@ def create_fft_spectrum_chart(
             x=f,
             y=m,
             mode="lines",
-            name="FFT Amplitude",
-            line=dict(color=COLOR_PURPLE, width=1.8),
+            name="Spectral Amplitude",
+            line=dict(color=SAGE_MAIN, width=1.8),
             fill="tozeroy",
-            fillcolor="rgba(168, 85, 247, 0.15)",
+            fillcolor=SAGE_FILL,
         )
     )
     if dominant_freq_hz > 0:
         fig.add_vline(
             x=dominant_freq_hz,
             line_dash="dash",
-            line_color=COLOR_AMBER,
-            annotation_text=f"Dominant: {dominant_freq_hz:.1f} Hz",
-            annotation_font_color=COLOR_AMBER,
+            line_color=IVORY_MAIN,
+            annotation_text=f"Peak: {dominant_freq_hz:.1f} Hz",
+            annotation_font_color=IVORY_MAIN,
         )
-    return _apply_dark_engineering_layout(
+    return _apply_obsidian_sage_layout(
         fig,
-        title="Vibration FFT Frequency Spectrum (Hann Windowed)",
+        title="Vibration Frequency Spectrum (FFT)",
         xaxis_title="Frequency (Hz)",
         yaxis_title="Magnitude (g)",
-        height=275,
+        height=285,
     )
 
 
 def create_class_scores_chart(class_scores: Dict[str, float]) -> go.Figure:
-    """Create horizontal bar chart showing Random Forest ensemble tree-vote distribution."""
-    labels = list(class_scores.keys())
-    values = [float(class_scores[k]) * 100.0 for k in labels]
+    """Create horizontal bar chart showing Random Forest ensemble agreement."""
+    friendly_names = {
+        "HEALTHY": "Healthy",
+        "ROTOR_IMBALANCE": "Rotor Imbalance",
+        "MECHANICAL_STALL": "Mechanical Stall",
+    }
+    raw_keys = list(class_scores.keys())
+    labels = [friendly_names.get(k, k) for k in raw_keys]
+    values = [float(class_scores[k]) * 100.0 for k in raw_keys]
     colors = [
-        COLOR_GREEN if k == "HEALTHY" else (COLOR_AMBER if k == "ROTOR_IMBALANCE" else COLOR_RED)
-        for k in labels
+        SAGE_MAIN if k == "HEALTHY" else (IVORY_SOFT if k == "ROTOR_IMBALANCE" else IVORY_MAIN)
+        for k in raw_keys
     ]
 
     fig = go.Figure(
@@ -262,42 +315,51 @@ def create_class_scores_chart(class_scores: Dict[str, float]) -> go.Figure:
             x=values,
             y=labels,
             orientation="h",
-            marker=dict(color=colors),
+            marker=dict(
+                color=colors,
+                line=dict(color=OBSIDIAN_BG, width=1),
+            ),
             text=[f"{v:.1f}%" for v in values],
             textposition="auto",
+            textfont=dict(color=OBSIDIAN_BG, weight="bold"),
         )
     )
-    fig = _apply_dark_engineering_layout(
+    fig = _apply_obsidian_sage_layout(
         fig,
-        title="Random Forest Tree-Vote Agreement by Operating Class (Uncalibrated)",
-        xaxis_title="Ensemble Tree Vote Share (%)",
-        yaxis_title="Fault Class",
-        height=220,
+        title="AI Model Agreement by Condition",
+        xaxis_title="Ensemble Tree Agreement (%)",
+        yaxis_title="",
+        height=230,
     )
     fig.update_xaxes(range=[0, 105])
     return fig
 
 
 def create_confusion_matrix_chart(cm: List[List[int]], labels: List[str]) -> go.Figure:
-    """Create annotated confusion matrix heatmap for model evaluation summary."""
+    """Create annotated confusion matrix heatmap using Obsidian-Sage tonal scale."""
     z = np.asarray(cm, dtype=int)
+    friendly_labels = [lbl.replace("_", " ").title() for lbl in labels]
+    custom_scale = [
+        [0.0, "#1E221E"],
+        [0.5, "#606B4B"],
+        [1.0, "#A8B58A"],
+    ]
     fig = go.Figure(
         data=go.Heatmap(
             z=z,
-            x=labels,
-            y=labels,
-            colorscale="Blues",
+            x=friendly_labels,
+            y=friendly_labels,
+            colorscale=custom_scale,
             text=z,
             texttemplate="%{text}",
-            textfont={"size": 13},
+            textfont={"size": 13, "color": IVORY_MAIN},
             showscale=False,
         )
     )
-    return _apply_dark_engineering_layout(
+    return _apply_obsidian_sage_layout(
         fig,
-        title="Held-Out Test Set Confusion Matrix",
-        xaxis_title="Predicted Class",
-        yaxis_title="True Class",
-        height=260,
+        title="Validation Confusion Matrix",
+        xaxis_title="Predicted Condition",
+        yaxis_title="Actual Condition",
+        height=265,
     )
-
