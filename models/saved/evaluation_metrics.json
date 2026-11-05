@@ -1,0 +1,75 @@
+{
+  "trained_at_utc": "2026-11-05T13:02:12Z",
+  "data_source": "SYNTHETIC_DEMONSTRATION",
+  "validation_disclaimer": "Model trained on synthetic demonstration patterns. Not validated on physical EV motor faults.",
+  "total_samples": 720,
+  "train_samples": 540,
+  "test_samples": 180,
+  "accuracy": 1.0,
+  "precision_weighted": 1.0,
+  "recall_weighted": 1.0,
+  "f1_weighted": 1.0,
+  "labels": [
+    "HEALTHY",
+    "ROTOR_IMBALANCE",
+    "MECHANICAL_STALL"
+  ],
+  "confusion_matrix": [
+    [
+      60,
+      0,
+      0
+    ],
+    [
+      0,
+      60,
+      0
+    ],
+    [
+      0,
+      0,
+      60
+    ]
+  ],
+  "per_class_metrics": {
+    "HEALTHY": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 60
+    },
+    "ROTOR_IMBALANCE": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 60
+    },
+    "MECHANICAL_STALL": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 60
+    }
+  },
+  "feature_importances": {
+    "vib_rms": 0.08686,
+    "vib_peak_to_peak": 0.02991,
+    "vib_mean": 0.08054,
+    "vib_std": 0.06343,
+    "vib_variance": 0.07681,
+    "vib_kurtosis": 0.04665,
+    "vib_dominant_freq_hz": 0.06664,
+    "vib_spectral_energy": 0.07618,
+    "vib_band_energy_50_1000hz": 0.09979,
+    "current_mean": 0.0807,
+    "current_rms": 0.09632,
+    "current_peak": 0.05696,
+    "current_variation": 0.0539,
+    "current_fluctuation": 0.03627,
+    "temp_current_c": 0.01969,
+    "temp_change_c": 0.0,
+    "temp_moving_avg_c": 0.02934,
+    "temp_rise_rate_c_per_s": 0.0
+  },
+  "classification_report_text": "                  precision    recall  f1-score   support\n\n         HEALTHY       1.00      1.00      1.00        60\n ROTOR_IMBALANCE       1.00      1.00      1.00        60\nMECHANICAL_STALL       1.00      1.00      1.00        60\n\n        accuracy                           1.00       180\n       macro avg       1.00      1.00      1.00       180\n    weighted avg       1.00      1.00      1.00       180\n"
+}

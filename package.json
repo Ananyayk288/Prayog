@@ -1,0 +1,14 @@
+{
+  "name": "ev-motor-fault-detection",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Edge-AI Multi-Modal Sensor Fusion System for EV Motor Fault Detection",
+  "scripts": {
+    "dev": ".\\.venv\\Scripts\\streamlit.exe run dashboard/app.py",
+    "start": ".\\.venv\\Scripts\\streamlit.exe run dashboard/app.py",
+    "train": ".\\.venv\\Scripts\\python.exe scripts/train.py",
+    "generate-data": ".\\.venv\\Scripts\\python.exe scripts/generate_dataset.py",
+    "test": ".\\.venv\\Scripts\\python.exe -m pytest -v"
+  }
+}
+

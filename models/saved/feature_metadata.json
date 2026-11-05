@@ -1,0 +1,49 @@
+{
+  "feature_columns": [
+    "vib_rms",
+    "vib_peak_to_peak",
+    "vib_mean",
+    "vib_std",
+    "vib_variance",
+    "vib_kurtosis",
+    "vib_dominant_freq_hz",
+    "vib_spectral_energy",
+    "vib_band_energy_50_1000hz",
+    "current_mean",
+    "current_rms",
+    "current_peak",
+    "current_variation",
+    "current_fluctuation",
+    "temp_current_c",
+    "temp_change_c",
+    "temp_moving_avg_c",
+    "temp_rise_rate_c_per_s"
+  ],
+  "feature_units": {
+    "vib_rms": "g",
+    "vib_peak_to_peak": "g",
+    "vib_mean": "g",
+    "vib_std": "g",
+    "vib_variance": "g\u00b2",
+    "vib_kurtosis": "-",
+    "vib_dominant_freq_hz": "Hz",
+    "vib_spectral_energy": "g\u00b2/Hz",
+    "vib_band_energy_50_1000hz": "g\u00b2",
+    "current_mean": "A",
+    "current_rms": "A",
+    "current_peak": "A",
+    "current_variation": "A",
+    "current_fluctuation": "%",
+    "temp_current_c": "\u00b0C",
+    "temp_change_c": "\u00b0C",
+    "temp_moving_avg_c": "\u00b0C",
+    "temp_rise_rate_c_per_s": "\u00b0C/s"
+  },
+  "fault_classes": [
+    "HEALTHY",
+    "ROTOR_IMBALANCE",
+    "MECHANICAL_STALL"
+  ],
+  "data_source": "SYNTHETIC_DEMONSTRATION",
+  "model_type": "RandomForestClassifier + IsolationForest"
+}

@@ -1,0 +1,23 @@
+# Python virtual environment and cache
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Environment variables
+.env
+
+# Generated artifacts & runtime logs
+data/raw/*.csv
+data/processed/*.csv
+!data/sample/*.csv
+*.log
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
