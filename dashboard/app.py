@@ -100,6 +100,8 @@ def init_session_state() -> None:
         st.session_state.operating_mode = "SIMULATION MODE"
     if "sim_fault_state" not in st.session_state:
         st.session_state.sim_fault_state = CLASS_HEALTHY
+    if "sim_condition_selector" not in st.session_state:
+        st.session_state.sim_condition_selector = CODE_TO_FRIENDLY_STATE[st.session_state.sim_fault_state]
     if "band_low_hz" not in st.session_state:
         st.session_state.band_low_hz = float(SIGNAL_CONFIG.bandpass_low_hz)
     if "band_high_hz" not in st.session_state:
@@ -699,19 +701,30 @@ def main() -> None:
         if st.session_state.operating_mode == "SIMULATION MODE":
             st.markdown("##### Simulated Motor Condition")
             friendly_options = list(FRIENDLY_STATE_TO_CODE.keys())
-            current_friendly = CODE_TO_FRIENDLY_STATE.get(
-                st.session_state.sim_fault_state, friendly_options[0]
-            )
+            
+            def _on_simulation_condition_change() -> None:
+                new_friendly = st.session_state.sim_condition_selector
+                new_code = FRIENDLY_STATE_TO_CODE.get(new_friendly, CLASS_HEALTHY)
+                st.session_state.sim_fault_state = new_code
+                sim.set_operating_state(new_code)
+
+            # Ensure session state selector is valid
+            if st.session_state.sim_condition_selector not in friendly_options:
+                st.session_state.sim_condition_selector = CODE_TO_FRIENDLY_STATE.get(
+                    st.session_state.sim_fault_state, friendly_options[0]
+                )
+
             chosen_friendly = st.selectbox(
                 "Choose Condition to Demonstrate",
                 options=friendly_options,
-                index=friendly_options.index(current_friendly),
+                key="sim_condition_selector",
+                on_change=_on_simulation_condition_change,
                 label_visibility="collapsed",
             )
-            selected_code = FRIENDLY_STATE_TO_CODE[chosen_friendly]
-            if selected_code != st.session_state.sim_fault_state:
-                st.session_state.sim_fault_state = selected_code
-                sim.set_operating_state(selected_code)
+            # Sync code with current selection
+            selected_code = FRIENDLY_STATE_TO_CODE.get(chosen_friendly, CLASS_HEALTHY)
+            st.session_state.sim_fault_state = selected_code
+            sim.set_operating_state(selected_code)
 
             step_now = st.button("Capture Next Reading", type="primary", use_container_width=True)
         else:
